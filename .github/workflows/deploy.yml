@@ -1,4 +1,4 @@
-name: Deploy to EC2 on Push
+name: CI/CD Deploy to EC2
 
 on:
   push:
@@ -7,21 +7,28 @@ on:
 
 jobs:
   deploy:
-    name: SSH & Deploy to EC2
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
+    - name: Checkout code
+      uses: actions/checkout@v2
 
-      - name: SSH into EC2 and deploy
-        uses: appleboy/ssh-action@v0.1.10
-        with:
-          host: ${{ secrets.EC2_HOST }}
-          username: ubuntu
-          key: ${{ secrets.EC2_SSH_KEY }}
-          script: |
-            cd multi-app-devops || git clone https://github.com/Sam2op/multi-app-devops.git && cd multi-app-devops
-            git pull origin main
-            docker-compose down
-            docker-compose up -d --build
+    - name: Deploy to EC2 via SSH
+      uses: appleboy/ssh-action@v0.1.10
+      with:
+        host: ${{ secrets.EC2_HOST }}
+        username: ${{ secrets.EC2_USER }}
+        key: ${{ secrets.EC2_SSH_KEY }}
+        script: |
+          # Clone or pull latest code
+          if [ ! -d "devops-multi-app-monitoring" ]; then
+            git clone https://github.com/Sam2op/multi-app-devops.git devops-multi-app-monitoring
+          fi
+          cd devops-multi-app-monitoring
+          git reset --hard
+          git pull origin main
+
+          # Stop and rebuild containers WITHOUT cache
+          docker-compose down
+          docker-compose build --no-cache
+          docker-compose up -d
