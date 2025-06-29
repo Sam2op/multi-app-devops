@@ -1,0 +1,27 @@
+name: Deploy to EC2 on Push
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    name: SSH & Deploy to EC2
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: SSH into EC2 and deploy
+        uses: appleboy/ssh-action@v0.1.10
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ubuntu
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            cd multi-app-devops || git clone https://github.com/Sam2op/multi-app-devops.git && cd multi-app-devops
+            git pull origin main
+            docker-compose down
+            docker-compose up -d --build
