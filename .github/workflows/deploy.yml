@@ -21,10 +21,10 @@ jobs:
         key: ${{ secrets.EC2_SSH_KEY }}
         script: |
           # Clone or pull latest code
-          if [ ! -d "devops-multi-app-monitoring" ]; then
-            git clone https://github.com/Sam2op/multi-app-devops.git devops-multi-app-monitoring
+          if [ ! -d "multi-app-devops" ]; then
+            git clone https://github.com/Sam2op/multi-app-devops.git multi-app-devops
           fi
-          cd devops-multi-app-monitoring
+          cd multi-app-devops
           git reset --hard
           git pull origin main
 
