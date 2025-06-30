@@ -7,7 +7,7 @@ metrics = PrometheusMetrics(app)
 
 @app.route("/")
 def home():
-    return "✅ Hello from App after CI/CD 2"
+    return "✅ Hello from App after CI/CD 4"
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=8000)
